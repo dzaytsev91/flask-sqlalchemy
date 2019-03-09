@@ -31,6 +31,7 @@ from sqlalchemy.orm.session import Session as SessionBase
 from flask_sqlalchemy.model import Model
 from ._compat import itervalues, string_types, xrange
 from .model import DefaultMeta
+from . import utils
 
 __version__ = '2.3.2'
 
@@ -567,7 +568,10 @@ class _EngineConnector(object):
             return rv
 
     def get_options(self, sa_url, echo):
-        options = {'convert_unicode': True}
+        options = {}
+        if utils.sqlalchemy_version('<', '1.3'):
+            options['convert_unicode'] = True
+
         self._sa.apply_pool_defaults(self._app, options)
         self._sa.apply_driver_hacks(self._app, sa_url, options)
         if echo:
